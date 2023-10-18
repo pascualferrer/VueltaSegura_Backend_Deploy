@@ -5,14 +5,9 @@ import router from './routes.js';
 
 const app = new koa();
 
-//app.use((ctx, next) => { // ctx = contexto (contiene la info de la request)
-   // ctx.body = "Body del middleware";
-   // next(); // next = indica que la solicitud debe pasar al siguiente middleware
-//});
-
-app.use(KoaLogger());
-app.use(koaBody());
-app.use(router.routes());
+app.use(KoaLogger()); //middleware
+app.use(koaBody()); //middleware
+app.use(router.routes()); //middleware
 
 app.listen(3000, () => {
     console.log('Iniciando app. Escuchando en puerto 3000');
