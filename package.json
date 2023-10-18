@@ -1,0 +1,15 @@
+{
+  "name": "grupo_Messi_backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "repository": "git@github.com:IIC2513/grupo_Messi_backend.git",
+  "author": "Pablo Aylwin <p.aylwin.k@uc.cl>",
+  "license": "MIT",
+  "dependencies": {
+    "koa": "^2.14.2"
+  },
+  "scripts": {
+    "start": "node src/index.js"
+  }
+}
