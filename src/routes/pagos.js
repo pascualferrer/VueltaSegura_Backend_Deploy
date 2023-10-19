@@ -1,6 +1,6 @@
 import Router from "koa-router";
 
-const users = [
+const pagos = [
     {
         "username": "MarcelinoNuñez",
         "password": "paraquetetraje"
@@ -11,10 +11,10 @@ const users = [
     }
 ]
 
-const routerUsers = new Router();
+const routerPagos = new Router();
 
-routerUsers.get('users.list', '/all', async (ctx) => {
-    ctx.body = users;
+routerPagos.get('pagos.list', '/all', async (ctx) => {
+    ctx.body = pagos;
 })
 
-export default routerUsers;
+export default routerPagos;
