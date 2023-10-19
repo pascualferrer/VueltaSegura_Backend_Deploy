@@ -2,12 +2,18 @@ import Router from "koa-router";
 
 const clientes = [
     {
-        "username": "MarcelinoNuñez",
-        "password": "paraquetetraje"
+        "id": 1,
+        "nombre": "Marcelino Nuñez",
+        "email": "marcelindo@uc.cl",
+        "password": "paraquetetraje",
+        "telefono": "123456789"
     },
     {
-        "username": "Sextor",
-        "password": "honestamente"
+        "id": 2,
+        "nombre": "Sextor",
+        "email": "htenoric@uc.cl",
+        "password": "honestamente",
+        "telefono": "987654321",
     }
 ]
 
@@ -19,9 +25,9 @@ routerClientes.get("clientes.list", "/all", async (ctx) => {
 })
 
 // Obtener un cliente específico
-routerClientes.get("clientes.show", "/:username", async (ctx) => {
-    const username = ctx.params.username;
-    const cliente = clientes.find(c => c.username === username);
+routerClientes.get("clientes.show", "/:id", async (ctx) => {
+    const id = parseInt(ctx.params.id);
+    const cliente = clientes.find(c => c.id === id);
 
     if (cliente) {
         ctx.body = cliente;
@@ -42,9 +48,9 @@ routerClientes.post("clientes.create", "/", async (ctx) => {
 })
 
 // Actualizar información de un cliente
-routerClientes.put("clientes.update", "/:username", async (ctx) => {
-    const username = ctx.params.username;
-    const clienteIndex = clientes.findIndex(c => c.username === username);
+routerClientes.put("clientes.update", "/:id", async (ctx) => {
+    const id = ctx.params.id;
+    const clienteIndex = clientes.findIndex(c => c.id === id);
 
     if (clienteIndex !== -1) {
         const nuevoInfoCliente = ctx.request.body;
@@ -58,9 +64,9 @@ routerClientes.put("clientes.update", "/:username", async (ctx) => {
 })
 
 // Eliminar un cliente
-routerClientes.delete("clientes.delete", "/:username", async (ctx) => {
-    const username = ctx.params.username;
-    const clienteIndex = clientes.findIndex(c => c.username === username);
+routerClientes.delete("clientes.delete", "/:id", async (ctx) => {
+    const id = ctx.params.id;
+    const clienteIndex = clientes.findIndex(c => c.id === id);
 
     if (clienteIndex !== -1) {
         const clienteEliminado = clientes.splice(clienteIndex, 1);
