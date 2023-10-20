@@ -1,12 +1,12 @@
-import Router from "koa-router";
+const Router = require("koa-router");
 
-import routerClientes from "./routes/clientes.js";
-import routerChats from "./routes/chats.js";
-import routerEvaluaciones from "./routes/evaluaciones.js";
-import routerPagos from "./routes/pagos.js";
-import routerServicios from "./routes/servicios.js";
-import routerAdmins from "./routes/administradores.js";
-import routerChoferes from "./routes/choferes.js";
+const routerClientes = require("./routes/clientes.js");
+const routerChats = require("./routes/chats.js");
+const routerEvaluaciones = require("./routes/evaluaciones.js");
+const routerPagos = require("./routes/pagos.js");
+const routerServicios = require("./routes/servicios.js");
+const routerAdmins = require("./routes/administradores.js");
+const routerChoferes = require("./routes/choferes.js");
 
 const router = new Router();
 
@@ -18,4 +18,4 @@ router.use("/chats", routerChats.routes());
 router.use("/choferes", routerChoferes.routes());
 router.use("/administradores", routerAdmins.routes());
 
-export default router;
+module.exports = router;

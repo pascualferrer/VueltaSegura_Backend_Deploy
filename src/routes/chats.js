@@ -1,5 +1,4 @@
-import Router from "koa-router";
-
+const Router = require("koa-router");
 const chats = [
     {
         "id": 1,
@@ -77,4 +76,4 @@ routerChats.delete("chats.delete", "/:id", async (ctx) => {
     }
 })
 
-export default routerChats;
+module.exports = routerChats;

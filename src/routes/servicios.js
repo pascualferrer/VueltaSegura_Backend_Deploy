@@ -1,4 +1,4 @@
-import Router from "koa-router";
+const Router = require("koa-router");
 
 const servicios = [
     {
@@ -76,4 +76,4 @@ routerServicios.delete("servicios.delete", "/:id", async (ctx) => {
     }
 })
 
-export default routerServicios;
+module.exports = routerServicios;

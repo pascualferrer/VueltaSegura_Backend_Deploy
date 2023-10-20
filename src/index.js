@@ -1,25 +1,21 @@
-import koa from 'koa';
-import KoaLogger from 'koa-logger';
-import { koaBody } from 'koa-body';
-import router from './routes.js';
+const app = require('./app');
+const db = require('./models');
+const dotenv = require('dotenv');
 
-const app = new koa();
+dotenv.config();
 
-//app.use((ctx, next) => { // ctx = contexto (contiene la info de la request)
-   // ctx.body = "Body del middleware";
-   // next(); // next = indica que la solicitud debe pasar al siguiente middleware
-//});
+const PORT = process.env.PORT || 3000;
 
-app.use(KoaLogger());
-app.use(koaBody());
-app.use(router.routes());
-
-app.listen(3000, () => {
-    console.log('Iniciando app. Escuchando en puerto 3000');
-});
-
-// Después de la configuración de rutas
-app.use((ctx, next) => {
-    console.log(`Ruta detectada: ${ctx.request.method} ${ctx.request.path}`);
-    return next();
-});
+db.sequelize
+    .authenticate()
+    .then(() => {
+        console.log('Connection to the database has been established succesfully.');
+        app.listen(PORT, (err) => {
+            if (err) {
+                return console.error('Failed', err);
+            }
+            console.log(`Listening on port ${PORT}`);
+            return app;
+        });
+    })
+    .catch((err) => console.error('Unable to connect to the database:', err));

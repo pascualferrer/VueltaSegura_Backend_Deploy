@@ -1,4 +1,4 @@
-import Router from "koa-router";
+const Router = require("koa-router");
 
 const pagos = [
     {
@@ -73,4 +73,4 @@ routerPagos.delete("pagos.delete", "/:id", async (ctx) => {
     }
 })
 
-export default routerPagos;
+module.exports = routerPagos;

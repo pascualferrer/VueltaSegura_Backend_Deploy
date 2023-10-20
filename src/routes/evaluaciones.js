@@ -1,4 +1,4 @@
-import Router from "koa-router";
+const Router = require("koa-router");
 
 const evaluaciones = [
     {
@@ -75,4 +75,4 @@ routerEvaluaciones.delete("evaluaciones.delete", "/:id", async (ctx) => {
     }
 })
 
-export default routerEvaluaciones;
+module.exports = routerEvaluaciones;

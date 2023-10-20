@@ -1,5 +1,4 @@
-import Router from "koa-router";
-
+const Router = require("koa-router");
 const administradores = [
     {
         "id": 1,
@@ -76,4 +75,4 @@ routerAdmins.delete("administradores.delete", "/:id", async (ctx) => {
     }
 })
 
-export default routerAdmins;
+module.exports = routerAdmins;
