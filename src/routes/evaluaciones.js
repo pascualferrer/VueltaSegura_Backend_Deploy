@@ -1,78 +1,85 @@
 const Router = require("koa-router");
 
-const evaluaciones = [
-    {
-        "id": 1,
-        "comentario": "mano tengo fe",
-        "calificacion": 7,
-        "choferId": 1
-    },
-    {
-        "id": 2,
-        "comentario": "gooool de la vinotintoo",
-        "calificacion": 9,
-        "choferId": 1
-    }
-]
-
 const routerEvaluaciones = new Router();
 
-routerEvaluaciones.get('evaluaciones.list', '/all', async (ctx) => {
-    ctx.body = evaluaciones;
+//* Listar todos los evaluaciones (según cápsula)
+routerEvaluaciones.get("evaluaciones.list", "/", async (ctx) => {
+    try {
+        const evaluaciones = await ctx.orm.Evaluacion.findAll();
+        ctx.body = evaluaciones;
+        ctx.status = 200;
+    } catch(error) {
+        ctx.body = error;
+        ctx.status = 400;
+    }
 })
 
-// Obtener un evaluacion específico
+//* Obtener un evaluacion específico (según cápsula)
 routerEvaluaciones.get("evaluaciones.show", "/:id", async (ctx) => {
-    const id = parseInt(ctx.params.id);
-    const evaluacion = evaluaciones.find(c => c.id === id);
-
-    if (evaluacion) {
+    try {
+        const evaluacion = await ctx.orm.Evaluacion.findByPk(ctx.params.id); //! Busca según Primary Key
+        //! Otra forma de hacerlo: const evaluacion = await ctx.orm.Evaluacion.findOne({where:{id:ctx.params.id}}); Busca según condiciones (igual con findAll)
         ctx.body = evaluacion;
-    } else {
-        ctx.status = 404;
-        ctx.body = { mensaje: "Evaluacion no encontrado" };
+        ctx.status = 200;
+    } catch(error) {
+        ctx.body = error;
+        ctx.status = 400;
     }
 })
 
-// Crear un nuevo evaluacion
+//* Crear un nuevo evaluacion (según cápsula)
 routerEvaluaciones.post("evaluaciones.create", "/", async (ctx) => {
-    const nuevoEvaluacion = ctx.request.body;
-
-    evaluaciones.push(nuevoEvaluacion);
-
-    ctx.status = 201;
-    ctx.body = { mensaje: "Evaluacion creado exitosamente", evaluacion: nuevoEvaluacion };
+    try {
+        const evaluacion = await ctx.orm.Evaluacion.create(ctx.request.body);
+        ctx.body = evaluacion;
+        ctx.status = 201;
+    } catch(error) {
+        ctx.body = error;
+        ctx.status = 400;
+    }
 })
 
-// Actualizar información de un evaluacion
+//* Actualizar evaluacion
 routerEvaluaciones.put("evaluaciones.update", "/:id", async (ctx) => {
-    const id = ctx.params.id;
-    const evaluacionIndex = evaluaciones.findIndex(c => c.id === id);
+    try {
+        const evaluacion = await ctx.orm.Evaluacion.findByPk(ctx.params.id);
+        
+        if (!evaluacion) {
+            ctx.status = 404;
+            ctx.body = { error: "Evaluacion no encontrado" };
+            return;
+        }
 
-    if (evaluacionIndex !== -1) {
-        const nuevoInfoEvaluacion = ctx.request.body;
-        evaluaciones[evaluacionIndex] = { ...evaluaciones[evaluacionIndex], ...nuevoInfoEvaluacion };
+        await evaluacion.update(ctx.request.body);
 
-        ctx.body = { mensaje: "Evaluacion actualizado exitosamente", evaluacion: evaluaciones[evaluacionIndex] };
-    } else {
-        ctx.status = 404;
-        ctx.body = { mensaje: "Evaluacion no encontrado" };
+        ctx.body = evaluacion;
+        ctx.status = 200;
+    } catch (error) {
+        ctx.body = { error: error.message || "Ha ocurrido un error" };
+        ctx.status = 400;
     }
-})
+});
 
-// Eliminar un evaluacion
+//* Eliminar un evaluacion
 routerEvaluaciones.delete("evaluaciones.delete", "/:id", async (ctx) => {
-    const id = ctx.params.id;
-    const evaluacionIndex = evaluaciones.findIndex(c => c.id === id);
+    try {
+        const evaluacion = await ctx.orm.Evaluacion.findByPk(ctx.params.id);
 
-    if (evaluacionIndex !== -1) {
-        const evaluacionEliminado = evaluaciones.splice(evaluacionIndex, 1);
+        if (!evaluacion) {
+            ctx.status = 404;
+            ctx.body = { error: "Evaluacion no encontrado" };
+            return;
+        }
 
-        ctx.body = { mensaje: "Evaluacion eliminado exitosamente", evaluacion: evaluacionEliminado };
-    } else {
-        ctx.status = 404;
-        ctx.body = { mensaje: "Evaluacion no encontrado" };
+        await evaluacion.destroy();
+
+        ctx.body = { message: "Evaluacion eliminado exitosamente" };
+        ctx.status = 204;  // Sin contenido (No Content)
+    } catch (error) {
+        ctx.body = { error: error.message || "Ha ocurrido un error" };
+        ctx.status = 400;
     }
-})
+});
+
 
 module.exports = routerEvaluaciones;

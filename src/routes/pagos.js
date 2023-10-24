@@ -1,76 +1,85 @@
 const Router = require("koa-router");
 
-const pagos = [
-    {
-        "id": 1,
-        "servicioId": 1,
-        "clienteId": 1
-    },
-    {
-        "id": 2,
-        "servicioId": 2,
-        "clienteId": 2
-    }
-]
-
 const routerPagos = new Router();
 
-routerPagos.get('pagos.list', '/all', async (ctx) => {
-    ctx.body = pagos;
+//* Listar todos los pagos (según cápsula)
+routerPagos.get("pagos.list", "/", async (ctx) => {
+    try {
+        const pagos = await ctx.orm.Pago.findAll();
+        ctx.body = pagos;
+        ctx.status = 200;
+    } catch(error) {
+        ctx.body = error;
+        ctx.status = 400;
+    }
 })
 
-// Obtener un pago específico
+//* Obtener un pago específico (según cápsula)
 routerPagos.get("pagos.show", "/:id", async (ctx) => {
-    const id = parseInt(ctx.params.id);
-    const pago = pagos.find(c => c.id === id);
-
-    if (pago) {
+    try {
+        const pago = await ctx.orm.Pago.findByPk(ctx.params.id); //! Busca según Primary Key
+        //! Otra forma de hacerlo: const pago = await ctx.orm.Pago.findOne({where:{id:ctx.params.id}}); Busca según condiciones (igual con findAll)
         ctx.body = pago;
-    } else {
-        ctx.status = 404;
-        ctx.body = { mensaje: "Pagos no encontrado" };
+        ctx.status = 200;
+    } catch(error) {
+        ctx.body = error;
+        ctx.status = 400;
     }
 })
 
-// Crear un nuevo pago
+//* Crear un nuevo pago (según cápsula)
 routerPagos.post("pagos.create", "/", async (ctx) => {
-    const nuevoPagos = ctx.request.body;
-
-    pagos.push(nuevoPagos);
-
-    ctx.status = 201;
-    ctx.body = { mensaje: "Pagos creado exitosamente", pago: nuevoPagos };
+    try {
+        const pago = await ctx.orm.Pago.create(ctx.request.body);
+        ctx.body = pago;
+        ctx.status = 201;
+    } catch(error) {
+        ctx.body = error;
+        ctx.status = 400;
+    }
 })
 
-// Actualizar información de un pago
+//* Actualizar pago
 routerPagos.put("pagos.update", "/:id", async (ctx) => {
-    const id = ctx.params.id;
-    const pagoIndex = pagos.findIndex(c => c.id === id);
+    try {
+        const pago = await ctx.orm.Pago.findByPk(ctx.params.id);
+        
+        if (!pago) {
+            ctx.status = 404;
+            ctx.body = { error: "Pago no encontrado" };
+            return;
+        }
 
-    if (pagoIndex !== -1) {
-        const nuevoInfoPagos = ctx.request.body;
-        pagos[pagoIndex] = { ...pagos[pagoIndex], ...nuevoInfoPagos };
+        await pago.update(ctx.request.body);
 
-        ctx.body = { mensaje: "Pagos actualizado exitosamente", pago: pagos[pagoIndex] };
-    } else {
-        ctx.status = 404;
-        ctx.body = { mensaje: "Pagos no encontrado" };
+        ctx.body = pago;
+        ctx.status = 200;
+    } catch (error) {
+        ctx.body = { error: error.message || "Ha ocurrido un error" };
+        ctx.status = 400;
     }
-})
+});
 
-// Eliminar un pago
+//* Eliminar un pago
 routerPagos.delete("pagos.delete", "/:id", async (ctx) => {
-    const id = ctx.params.id;
-    const pagoIndex = pagos.findIndex(c => c.id === id);
+    try {
+        const pago = await ctx.orm.Pago.findByPk(ctx.params.id);
 
-    if (pagoIndex !== -1) {
-        const pagoEliminado = pagos.splice(pagoIndex, 1);
+        if (!pago) {
+            ctx.status = 404;
+            ctx.body = { error: "Pago no encontrado" };
+            return;
+        }
 
-        ctx.body = { mensaje: "Pagos eliminado exitosamente", pago: pagoEliminado };
-    } else {
-        ctx.status = 404;
-        ctx.body = { mensaje: "Pagos no encontrado" };
+        await pago.destroy();
+
+        ctx.body = { message: "Pago eliminado exitosamente" };
+        ctx.status = 204;  // Sin contenido (No Content)
+    } catch (error) {
+        ctx.body = { error: error.message || "Ha ocurrido un error" };
+        ctx.status = 400;
     }
-})
+});
+
 
 module.exports = routerPagos;

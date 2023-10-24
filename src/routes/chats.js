@@ -1,79 +1,84 @@
 const Router = require("koa-router");
-const chats = [
-    {
-        "id": 1,
-        "clienteId": 1,
-        "choferId": 1,
-        "adminId": 1,
-        "mensaje": "LE PEGÓ"
-    },
-    {
-        "id": 2,
-        "clienteId": 2,
-        "choferId": 2,
-        "adminId": 2,
-        "mensaje": "Claudio palma"
-    }
-]
 
 const routerChats = new Router();
 
-routerChats.get('chats.list', '/all', async (ctx) => {
-    ctx.body = chats;
+//* Listar todos los chats (según cápsula)
+routerChats.get("chats.list", "/", async (ctx) => {
+    try {
+        const chats = await ctx.orm.Chat.findAll();
+        ctx.body = chats;
+        ctx.status = 200;
+    } catch(error) {
+        ctx.body = error;
+        ctx.status = 400;
+    }
 })
 
-// Obtener un chat específico
+//* Obtener un chat específico (según cápsula)
 routerChats.get("chats.show", "/:id", async (ctx) => {
-    const id = parseInt(ctx.params.id);
-    const chat = chats.find(c => c.id === id);
-
-    if (chat) {
+    try {
+        const chat = await ctx.orm.Chat.findByPk(ctx.params.id); //! Busca según Primary Key
+        //! Otra forma de hacerlo: const chat = await ctx.orm.Chat.findOne({where:{id:ctx.params.id}}); Busca según condiciones (igual con findAll)
         ctx.body = chat;
-    } else {
-        ctx.status = 404;
-        ctx.body = { mensaje: "Chat no encontrado" };
+        ctx.status = 200;
+    } catch(error) {
+        ctx.body = error;
+        ctx.status = 400;
     }
 })
 
-// Crear un nuevo chat
+//* Crear un nuevo chat (según cápsula)
 routerChats.post("chats.create", "/", async (ctx) => {
-    const nuevoChat = ctx.request.body;
-
-    chats.push(nuevoChat);
-
-    ctx.status = 201;
-    ctx.body = { mensaje: "Chat creado exitosamente", chat: nuevoChat };
+    try {
+        const chat = await ctx.orm.Chat.create(ctx.request.body);
+        ctx.body = chat;
+        ctx.status = 201;
+    } catch(error) {
+        ctx.body = error;
+        ctx.status = 400;
+    }
 })
 
-// Actualizar información de un chat
+//* Actualizar chat
 routerChats.put("chats.update", "/:id", async (ctx) => {
-    const id = ctx.params.id;
-    const chatIndex = chats.findIndex(c => c.id === id);
+    try {
+        const chat = await ctx.orm.Chat.findByPk(ctx.params.id);
+        
+        if (!chat) {
+            ctx.status = 404;
+            ctx.body = { error: "Chat no encontrado" };
+            return;
+        }
 
-    if (chatIndex !== -1) {
-        const nuevoInfoChat = ctx.request.body;
-        chats[chatIndex] = { ...chats[chatIndex], ...nuevoInfoChat };
+        await chat.update(ctx.request.body);
 
-        ctx.body = { mensaje: "Chat actualizado exitosamente", chat: chats[chatIndex] };
-    } else {
-        ctx.status = 404;
-        ctx.body = { mensaje: "Chat no encontrado" };
+        ctx.body = chat;
+        ctx.status = 200;
+    } catch (error) {
+        ctx.body = { error: error.message || "Ha ocurrido un error" };
+        ctx.status = 400;
     }
-})
+});
 
-// Eliminar un chat
+//* Eliminar un chat
 routerChats.delete("chats.delete", "/:id", async (ctx) => {
-    const id = ctx.params.id;
-    const chatIndex = chats.findIndex(c => c.id === id);
+    try {
+        const chat = await ctx.orm.Chat.findByPk(ctx.params.id);
 
-    if (chatIndex !== -1) {
-        const chatEliminado = chats.splice(chatIndex, 1);
+        if (!chat) {
+            ctx.status = 404;
+            ctx.body = { error: "Chat no encontrado" };
+            return;
+        }
 
-        ctx.body = { mensaje: "Chat eliminado exitosamente", chat: chatEliminado };
-    } else {
-        ctx.status = 404;
-        ctx.body = { mensaje: "Chat no encontrado" };
+        await chat.destroy();
+
+        ctx.body = { message: "Chat eliminado exitosamente" };
+        ctx.status = 204;  // Sin contenido (No Content)
+    } catch (error) {
+        ctx.body = { error: error.message || "Ha ocurrido un error" };
+        ctx.status = 400;
     }
-})
+});
 
 module.exports = routerChats;

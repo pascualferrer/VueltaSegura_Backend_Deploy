@@ -1,82 +1,84 @@
 const Router = require("koa-router");
 
-const choferes = [
-    {
-        "id": 1,
-        "nombre": "Max Verstappen",
-        "email": "verstappen@uc.cl",
-        "password": "tutututu",
-        "telefono": "123456789",
-        "historial": 3 //viajes realizados?
-    },
-    {
-        "id": 2,
-        "nombre": "Kalule Meléndez",
-        "email": "kalule@uc.cl",
-        "password": "kalule",
-        "telefono": "123456789",
-        "historial": 7 //viajes realizados?
-    }
-]
-
 const routerChoferes = new Router();
 
-routerChoferes.get('choferes.list', '/all', async (ctx) => {
-    ctx.body = choferes;
+//* Listar todos los choferes (según cápsula)
+routerChoferes.get("choferes.list", "/", async (ctx) => {
+    try {
+        const choferes = await ctx.orm.Chofer.findAll();
+        ctx.body = choferes;
+        ctx.status = 200;
+    } catch(error) {
+        ctx.body = error;
+        ctx.status = 400;
+    }
 })
 
-// Obtener un chofer específico
+//* Obtener un chofer específico (según cápsula)
 routerChoferes.get("choferes.show", "/:id", async (ctx) => {
-    const id = parseInt(ctx.params.id);
-    const chofer = choferes.find(c => c.id === id);
-
-    if (chofer) {
+    try {
+        const chofer = await ctx.orm.Chofer.findByPk(ctx.params.id); //! Busca según Primary Key
+        //! Otra forma de hacerlo: const chofer = await ctx.orm.Chofer.findOne({where:{id:ctx.params.id}}); Busca según condiciones (igual con findAll)
         ctx.body = chofer;
-    } else {
-        ctx.status = 404;
-        ctx.body = { mensaje: "Chofer no encontrado" };
+        ctx.status = 200;
+    } catch(error) {
+        ctx.body = error;
+        ctx.status = 400;
     }
 })
 
-// Crear un nuevo chofer
-routerChoferes.post("choferes.create", "/", async (ctx) => {
-    const nuevoChofer = ctx.request.body;
-
-    choferes.push(nuevoChofer);
-
-    ctx.status = 201;
-    ctx.body = { mensaje: "Chofer creado exitosamente", chofer: nuevoChofer };
+//* Crear un nuevo chofer (según cápsula)
+routerChoferes.post("choferes.create", "/registro", async (ctx) => {
+    try {
+        const chofer = await ctx.orm.Chofer.create(ctx.request.body);
+        ctx.body = chofer;
+        ctx.status = 201;
+    } catch(error) {
+        ctx.body = error;
+        ctx.status = 400;
+    }
 })
 
-// Actualizar información de un chofer
+//* Actualizar chofer
 routerChoferes.put("choferes.update", "/:id", async (ctx) => {
-    const id = ctx.params.id;
-    const choferesIndex = choferes.findIndex(c => c.id === id);
+    try {
+        const chofer = await ctx.orm.Chofer.findByPk(ctx.params.id);
+        
+        if (!chofer) {
+            ctx.status = 404;
+            ctx.body = { error: "Chofer no encontrado" };
+            return;
+        }
 
-    if (choferesIndex !== -1) {
-        const nuevoInfoChofer = ctx.request.body;
-        choferes[choferesIndex] = { ...choferes[choferesIndex], ...nuevoInfoChofer };
+        await chofer.update(ctx.request.body);
 
-        ctx.body = { mensaje: "Chofer actualizado exitosamente", chofer: choferes[choferesIndex] };
-    } else {
-        ctx.status = 404;
-        ctx.body = { mensaje: "Chofer no encontrado" };
+        ctx.body = chofer;
+        ctx.status = 200;
+    } catch (error) {
+        ctx.body = { error: error.message || "Ha ocurrido un error" };
+        ctx.status = 400;
     }
-})
+});
 
-// Eliminar un chofer
+//* Eliminar un chofer
 routerChoferes.delete("choferes.delete", "/:id", async (ctx) => {
-    const id = ctx.params.id;
-    const choferesIndex = choferes.findIndex(c => c.id === id);
+    try {
+        const chofer = await ctx.orm.Chofer.findByPk(ctx.params.id);
 
-    if (choferesIndex !== -1) {
-        const choferEliminado = choferes.splice(choferesIndex, 1);
+        if (!chofer) {
+            ctx.status = 404;
+            ctx.body = { error: "Chofer no encontrado" };
+            return;
+        }
 
-        ctx.body = { mensaje: "Chofer eliminado exitosamente", chofer: choferEliminado };
-    } else {
-        ctx.status = 404;
-        ctx.body = { mensaje: "Chofer no encontrado" };
+        await chofer.destroy();
+
+        ctx.body = { message: "Chofer eliminado exitosamente" };
+        ctx.status = 204;  // Sin contenido (No Content)
+    } catch (error) {
+        ctx.body = { error: error.message || "Ha ocurrido un error" };
+        ctx.status = 400;
     }
-})
+});
 
 module.exports = routerChoferes;

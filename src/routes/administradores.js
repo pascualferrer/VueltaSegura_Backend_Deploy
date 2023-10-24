@@ -1,78 +1,84 @@
 const Router = require("koa-router");
-const administradores = [
-    {
-        "id": 1,
-        "nombre": "Chupete Suazo",
-        "email": "suazo@uc.cl",
-        "password": "papito"
-    },
-    {
-        "id": 2,
-        "nombre": "Esteban Efrain",
-        "email": "tanker@uc.cl",
-        "password": "supertanker"
-    }
-]
 
-// Listar todos los admins
 const routerAdmins = new Router();
 
-routerAdmins.get('administradores.list', '/all', async (ctx) => {
-    ctx.body = administradores;
+//* Listar todos los administradores (según cápsula)
+routerAdmins.get("administradores.list", "/", async (ctx) => {
+    try {
+        const administradores = await ctx.orm.Admin.findAll();
+        ctx.body = administradores;
+        ctx.status = 200;
+    } catch(error) {
+        ctx.body = error;
+        ctx.status = 400;
+    }
 })
 
-// Obtener un admin específico
+//* Obtener un administrador específico (según cápsula)
 routerAdmins.get("administradores.show", "/:id", async (ctx) => {
-    const id = parseInt(ctx.params.id);
-    const administrador = administradores.find(c => c.id === id);
-
-    if (administrador) {
+    try {
+        const administrador = await ctx.orm.Admin.findByPk(ctx.params.id); //! Busca según Primary Key
+        //! Otra forma de hacerlo: const administrador = await ctx.orm.Admin.findOne({where:{id:ctx.params.id}}); Busca según condiciones (igual con findAll)
         ctx.body = administrador;
-    } else {
-        ctx.status = 404;
-        ctx.body = { mensaje: "Administrador no encontrado" };
+        ctx.status = 200;
+    } catch(error) {
+        ctx.body = error;
+        ctx.status = 400;
     }
 })
 
-// Crear un nuevo admin
+//* Crear un nuevo administrador (según cápsula)
 routerAdmins.post("administradores.create", "/", async (ctx) => {
-    const nuevoAdmin = ctx.request.body;
-
-    administradores.push(nuevoAdmin);
-
-    ctx.status = 201;
-    ctx.body = { mensaje: "Administrador creado exitosamente", administradore: nuevoAdmin };
+    try {
+        const administrador = await ctx.orm.Admin.create(ctx.request.body);
+        ctx.body = administrador;
+        ctx.status = 201;
+    } catch(error) {
+        ctx.body = error;
+        ctx.status = 400;
+    }
 })
 
-// Actualizar información de un admin
+//* Actualizar administrador
 routerAdmins.put("administradores.update", "/:id", async (ctx) => {
-    const id = ctx.params.id;
-    const adminIndex = administradores.findIndex(c => c.id === id);
+    try {
+        const administrador = await ctx.orm.Admin.findByPk(ctx.params.id);
+        
+        if (!administrador) {
+            ctx.status = 404;
+            ctx.body = { error: "Admin no encontrado" };
+            return;
+        }
 
-    if (adminIndex !== -1) {
-        const nuevoInfoAdmin = ctx.request.body;
-        administradores[adminIndex] = { ...administradores[adminIndex], ...nuevoInfoAdmin };
+        await administrador.update(ctx.request.body);
 
-        ctx.body = { mensaje: "Administrador actualizado exitosamente", administradore: administradores[adminIndex] };
-    } else {
-        ctx.status = 404;
-        ctx.body = { mensaje: "Administrador no encontrado" };
+        ctx.body = administrador;
+        ctx.status = 200;
+    } catch (error) {
+        ctx.body = { error: error.message || "Ha ocurrido un error" };
+        ctx.status = 400;
     }
-})
+});
 
-// Eliminar un admin
+//* Eliminar un administrador
 routerAdmins.delete("administradores.delete", "/:id", async (ctx) => {
-    const id = ctx.params.id;
-    const adminIndex = administradores.findIndex(c => c.id === id);
+    try {
+        const administrador = await ctx.orm.Admin.findByPk(ctx.params.id);
 
-    if (adminIndex !== -1) {
-        const adminEliminado = administradores.splice(adminIndex, 1);
+        if (!administrador) {
+            ctx.status = 404;
+            ctx.body = { error: "Admin no encontrado" };
+            return;
+        }
 
-        ctx.body = { mensaje: "Administrador eliminado exitosamente", administradore: adminEliminado };
-    } else {
-        ctx.status = 404;
-        ctx.body = { mensaje: "Administrador no encontrado" };
+        await administrador.destroy();
+
+        ctx.body = { message: "Admin eliminado exitosamente" };
+        ctx.status = 204;  // Sin contenido (No Content)
+    } catch (error) {
+        ctx.body = { error: error.message || "Ha ocurrido un error" };
+        ctx.status = 400;
     }
-})
+});
 
 module.exports = routerAdmins;
