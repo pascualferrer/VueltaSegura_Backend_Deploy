@@ -16,8 +16,4 @@ app.use(KoaLogger());
 app.use(koaBody());
 app.use(router.routes());
 
-//app.listen(3000, () => {
-    //console.log('Iniciando app. Escuchando en puerto 3000');
-//});
-
 module.exports = app;

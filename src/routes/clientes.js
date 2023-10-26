@@ -3,6 +3,34 @@ const { DataTypes, Sequelize } = require("sequelize");
 
 const routerClientes = new Router();
 
+//* Obtener un cliente específico para un email
+routerClientes.get("clientes.login", "/buscar-por-email", async (ctx) => {
+    try {
+        const { email } = ctx.request.query;
+        console.log(email);
+
+        // Buscar un usuario por correo electrónico
+        const cliente = await ctx.orm.Cliente.findOne({
+            where: { email: email }
+        });
+
+        if (!cliente) {
+            // Usuario no encontrado
+            ctx.body = { error: 'Cliente no encontrado' };
+            ctx.status = 404;  // Código de estado HTTP 404 Not Found
+            return;
+        }
+
+        ctx.body = cliente;
+        ctx.status = 200;  // Código de estado HTTP 200 OK
+    } catch (error) {
+        // Manejar errores aquí
+        console.error(error);
+        ctx.body = { error: 'Error al procesar la solicitud' };
+        ctx.status = 500;  // Código de estado HTTP 500 Internal Server Error
+    }
+});
+
 //* Listar todos los clientes (según cápsula)
 routerClientes.get("clientes.list", "/", async (ctx) => {
     try {
@@ -18,27 +46,6 @@ routerClientes.get("clientes.list", "/", async (ctx) => {
 //* Obtener un cliente específico (según cápsula)
 routerClientes.get("clientes.show", "/:id", async (ctx) => {
     try {
-        // Verificar si el correo electrónico ya está registrado
-        const existingCliente = await ctx.orm.Cliente.findOne({
-            where: { email: ctx.request.body.email }
-        });
-
-        if (existingCliente) {
-            // Correo electrónico ya registrado
-            ctx.body = { error: 'Correo electrónico ya registrado' };
-            ctx.status = 409;  // Código de estado HTTP 409 Conflict
-            return;
-        }
-
-        // Verificar si la contraseña cumple con los requisitos de seguridad
-        const contrasena = ctx.request.body.contrasena;
-        if (!contrasena.match(/[a-z]/) || !contrasena.match(/[0-9]/) || !contrasena.match(/[@$!%*?&]/)) {
-            // Contraseña no cumple con los requisitos
-            ctx.body = { error: 'La contraseña debe tener al menos un número, una letra y un caracter especial' };
-            ctx.status = 400;  // Código de estado HTTP 400 Bad Request
-            return;
-        }
-
         const cliente = await ctx.orm.Cliente.findByPk(ctx.params.id); //! Busca según Primary Key
         //! Otra forma de hacerlo: const cliente = await ctx.orm.Cliente.findOne({where:{id:ctx.params.id}}); Busca según condiciones (igual con findAll)
         ctx.body = cliente;
