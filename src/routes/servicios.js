@@ -3,6 +3,36 @@ const Router = require("koa-router");
 
 const routerServicios = new Router();
 
+
+//* Obtener todos los servicios de un ID
+routerServicios.get("servicios.showID", "/buscar-por-id", async (ctx) => {
+    try {
+        const { clienteID } = ctx.request.query;
+        console.log(clienteID);
+
+        // Buscar un servicio por clienteID
+        const servicio = await ctx.orm.Servicio.findAll({
+            where: { clienteID: clienteID }
+        });
+
+        if (!servicio) {
+            // Usuario no encontrado
+            ctx.body = { error: 'Servicio no encontrado' };
+            ctx.status = 404;  // Código de estado HTTP 404 Not Found
+            return;
+        }
+
+        ctx.body = servicio;
+        ctx.status = 200;  // Código de estado HTTP 200 OK
+    } catch (error) {
+        // Manejar errores aquí
+        console.error(error);
+        ctx.body = { error: 'Error al procesar la solicitud' };
+        ctx.status = 500;  // Código de estado HTTP 500 Internal Server Error
+    }
+});
+
+
 //* Listar todos los servicios (según cápsula)
 routerServicios.get("servicios.list", "/", async (ctx) => {
     try {
@@ -27,6 +57,11 @@ routerServicios.get("servicios.show", "/:id", async (ctx) => {
         ctx.status = 400;
     }
 })
+
+
+
+
+//!modifcar aqui
 
 //* Crear un nuevo servicio (según cápsula)
 routerServicios.post("servicios.create", "/", async (ctx) => {
@@ -84,3 +119,9 @@ routerServicios.delete("servicios.delete", "/:id", async (ctx) => {
 
 
 module.exports = routerServicios;
+
+
+
+
+
+
