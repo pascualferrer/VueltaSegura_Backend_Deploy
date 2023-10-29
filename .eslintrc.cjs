@@ -28,5 +28,18 @@ module.exports = {
     'react'
   ],
   rules: {
+    // Estilo y formato
+    indent: ['error', 2], 
+    semi: ['error', 'always'], 
+    quotes: ['error', 'single'], 
+    'linebreak-style': ['error', 'unix'], 
+
+    // Buenas prácticas y consistencia
+    'no-console': 'warn', 
+    'no-unused-vars': 'warn',
+
+    // React
+    'react/jsx-uses-react': 'error',
+    'react/jsx-uses-vars': 'error'
   }
 }
