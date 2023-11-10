@@ -9,8 +9,10 @@
   "dependencies": {
     "@koa/cors": "^4.0.0",
     "dotenv": "^16.3.1",
+    "jsonwebtoken": "^9.0.2",
     "koa": "^2.14.2",
     "koa-body": "^6.0.1",
+    "koa-jwt": "^4.0.4",
     "koa-logger": "^3.2.1",
     "koa-router": "^11.0.2",
     "nodemon": "^3.0.1",
@@ -22,7 +24,6 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "lint": "eslint ."
-
   },
   "devDependencies": {
     "eslint": "^8.0.1",

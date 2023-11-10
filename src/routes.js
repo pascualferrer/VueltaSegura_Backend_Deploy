@@ -7,15 +7,24 @@ const routerPagos = require("./routes/pagos.js");
 const routerServicios = require("./routes/servicios.js");
 const routerAdmins = require("./routes/administradores.js");
 const routerChoferes = require("./routes/choferes.js");
+const authRoutes = require("./routes/authentication.js");
+const dotenv = require('dotenv');
+const jwtMiddleware = require('koa-jwt');
+
+dotenv.config();
 
 const router = new Router();
 
-router.use("/clientes", routerClientes.routes());
 router.use("/pagos", routerPagos.routes());
-router.use("/servicios", routerServicios.routes());
 router.use("/evaluaciones", routerEvaluaciones.routes());
-router.use("/chats", routerChats.routes());
+
+//* Rutas protegidas (requieren JWT)
+router.use(jwtMiddleware( { secret: process.env.JWT_SECRET } )); //! Comentar si se quiere usar postman
+router.use("/clientes", routerClientes.routes());
 router.use("/choferes", routerChoferes.routes());
 router.use("/administradores", routerAdmins.routes());
+router.use("/chats", routerChats.routes());
+router.use("/servicios", routerServicios.routes());
+router.use(authRoutes.routes());
 
 module.exports = router;

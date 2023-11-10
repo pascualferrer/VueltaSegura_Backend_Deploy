@@ -63,6 +63,7 @@ routerClientes.get("clientes.show", "/:id", async (ctx) => {
 })
 
 //* Crear un nuevo cliente (según cápsula)
+//TODO Borrar a futuro, está en authentication.js
 routerClientes.post("clientes.create", "/registro", async (ctx) => {
     try {
         const cliente = await ctx.orm.Cliente.create(ctx.request.body);
