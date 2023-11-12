@@ -13,7 +13,7 @@ async function isCliente(ctx, next) {
     await next();
     var token = ctx.request.header.authorization.split(' ')[1];
     var scope = getJWTScope(token);
-    ctx.assert(scope.includes('cliente'), 403, "You're not a cliente")
+    ctx.assert(scope.includes('cliente'), 403, "You're not a Cliente")
 }
 
 async function isChofer(ctx, next) {
@@ -27,7 +27,7 @@ async function isAdmin(ctx, next) {
     await next();
     var token = ctx.request.header.authorization.split(' ')[1];
     var scope = getJWTScope(token);
-    ctx.assert(scope.includes('admin'), 403, "You're not a Admin")
+    ctx.assert(scope.includes('admin'), 403, "You're not an Admin")
 }
 
 module.exports = {

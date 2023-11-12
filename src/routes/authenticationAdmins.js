@@ -1,24 +1,28 @@
 const Router = require('koa-router');
 var jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
+const bcrypt = require('bcrypt');
 
 dotenv.config();
 
 const router = new Router();
 
-//* Para signup de clientes
-router.post("authenticate.signup", "/signup", async (ctx) => {
+//* Para signup de admins
+router.post("authenticate.signup", "/admin/signup", async (ctx) => {
     const authInfo = ctx.request.body;
-    let cliente = await ctx.orm.Cliente.findOne({ where: { email: authInfo.email } })
-    if (cliente) {
-        ctx.body = `The cliente by the email '${authInfo.email}' already exists`;
+    let admin = await ctx.orm.Admin.findOne({ where: { email: authInfo.email } })
+    if (admin) {
+        ctx.body = `The admin by the email '${authInfo.email}' already exists`;
         ctx.status = 400;
         return;
     }
     try {
-        cliente = await ctx.orm.Cliente.create({
+        const saltRounds = 10;
+        const hashPassword = await bcrypt.hash(authInfo.contrasena, saltRounds);
+
+        admin = await ctx.orm.Admin.create({
             nombre: authInfo.nombre,
-            contrasena: authInfo.contrasena,
+            contrasena: hashPassword,
             email: authInfo.email,
             telefono: authInfo.telefono
         })
@@ -28,34 +32,39 @@ router.post("authenticate.signup", "/signup", async (ctx) => {
         return;
     }
     ctx.body = {
-        nombre: cliente.nombre,
-        email: cliente.email,
-        telefono: cliente.telefono
+        nombre: admin.nombre,
+        email: admin.email,
+        telefono: admin.telefono
     };
     ctx.status = 201;
 })
 
-//* Para login de clientes
-router.post("authenticator.login", "/login", async (ctx) => {
-    let cliente;
+//* Para login de admins
+router.post("authenticator.login", "/admin/login", async (ctx) => {
+    let admin;
     const authInfo = ctx.request.body;
     try {
-        cliente = await ctx.orm.Cliente.findOne({where:{email:authInfo.email}});
+        admin = await ctx.orm.Admin.findOne({ where: {email: authInfo.email } });
+        console.log(authInfo.email)
     }
     catch(error) {
         ctx.body = error;
+        console.log(error);
         ctx.status = 400;
         return;
     }
-    if (!cliente) {
-        ctx.body = `The user by the email '${authInfo.email}' was not found`;
+    if (!admin) {
+        ctx.body = `The admin by the email '${authInfo.email}' was not found`;
         ctx.status = 400;
         return;   
     }
-    if (cliente.contrasena == authInfo.contrasena) {
+
+    const validation = await bcrypt.compare(authInfo.contrasena, admin.contrasena);
+
+    if (validation) {
         ctx.body = {
-            nombre: cliente.nombre,
-            email: cliente.email,
+            nombre: admin.nombre,
+            email: admin.email,
         };
         ctx.status = 200;
     } else {
@@ -66,13 +75,13 @@ router.post("authenticator.login", "/login", async (ctx) => {
     const expirationSeconds = 1 * 60 * 60 * 24;
     const JWT_PRIVATE_KEY = process.env.JWT_SECRET;
     var token = jwt.sign(
-        { scope: ['cliente']},
+        { scope: ['admin']},
         JWT_PRIVATE_KEY,
-        { subject: cliente.id.toString() },
+        { subject: admin.id.toString() },
         { expiresIn: expirationSeconds }
     );
     ctx.body = {
-        "acces_token": token,
+        "access_token": token,
         "token_type": "Bearer",
         "expire_in": expirationSeconds,
     }
