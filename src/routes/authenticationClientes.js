@@ -32,11 +32,9 @@ router.post("authenticate.signup", "/clientes/signup", async (ctx) => {
         return;
     }
     ctx.body = {
-        "access_token": token,
-        "token_type": "Bearer",
-        "expire_in": expirationSeconds,
-        "id": cliente.id, 
-        "nombre": cliente.nombre
+        nombre: cliente.nombre,
+        email: cliente.email,
+        telefono: cliente.telefono
     };
     ctx.status = 201;
 })
@@ -86,7 +84,7 @@ router.post("authenticator.login", "/clientes/login", async (ctx) => {
         "access_token": token,
         "token_type": "Bearer",
         "expire_in": expirationSeconds,
-        "id": cliente.id, 
+        "id": cliente.id,
         "nombre": cliente.nombre
     }
     ctx.status = 200;
