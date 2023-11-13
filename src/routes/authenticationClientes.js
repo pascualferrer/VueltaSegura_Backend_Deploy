@@ -85,7 +85,8 @@ router.post("authenticator.login", "/clientes/login", async (ctx) => {
         "token_type": "Bearer",
         "expire_in": expirationSeconds,
         "id": cliente.id,
-        "nombre": cliente.nombre
+        "nombre": cliente.nombre,
+        "tipo": "cliente"
     }
     ctx.status = 200;
     
