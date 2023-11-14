@@ -1,5 +1,6 @@
 const Router = require("koa-router");
 const { DataTypes, Sequelize } = require("sequelize");
+const authUtils = require('../lib/auth/jwt');
 
 const routerClientes = new Router();
 
@@ -44,7 +45,7 @@ routerClientes.get("clientes.list", "/", async (ctx) => {
 })
 
 //* Obtener un cliente específico (según cápsula)
-routerClientes.get("clientes.show", "/:id", async (ctx) => {
+routerClientes.get("clientes.show", "/:id", authUtils.isChofer, async (ctx) => {
     try {
         const cliente = await ctx.orm.Cliente.findByPk(ctx.params.id); //! Busca según Primary Key
         //! Otra forma de hacerlo: const cliente = await ctx.orm.Cliente.findOne({where:{id:ctx.params.id}}); Busca según condiciones (igual con findAll)

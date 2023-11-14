@@ -34,7 +34,7 @@ routerServicios.get("servicios.showID", "/buscar-por-id", async (ctx) => {
 
 
 //* Listar todos los servicios (según cápsula)
-routerServicios.get("servicios.list", "/", async (ctx) => {
+routerServicios.get("servicios.list", "/all", async (ctx) => {
     try {
         const servicios = await ctx.orm.Servicio.findAll();
         ctx.body = servicios;

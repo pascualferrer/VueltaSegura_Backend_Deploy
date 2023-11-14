@@ -27,7 +27,7 @@ router.use("/chats", routerChats.routes());
 router.use("/servicios", routerServicios.routes());
 
 //* Rutas protegidas (requieren JWT)
-router.use(jwtMiddleware( { secret: process.env.JWT_SECRET } )); //! Comentar si se quiere usar postman
+//router.use(jwtMiddleware( { secret: process.env.JWT_SECRET } )); //! Comentar si se quiere usar postman
 
 router.use("/clientes", routerClientes.routes());
 router.use("/choferes", routerChoferes.routes());
