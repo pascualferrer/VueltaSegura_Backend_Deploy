@@ -31,7 +31,7 @@ routerChoferes.get("choferes.login", "/buscar-por-email", async (ctx) => {
 });
 
 //* Listar todos los choferes (según cápsula)
-routerChoferes.get("choferes.list", "/", async (ctx) => {
+routerChoferes.get("choferes.list", "/all", async (ctx) => {
     try {
         const choferes = await ctx.orm.Chofer.findAll();
         ctx.body = choferes;

@@ -22,15 +22,21 @@ router.get('/protectedAdmin', authUtils.isAdmin, async (ctx) => {
     }
 })
 
-router.get('/protectedServicio', authUtils.isCliente, async (ctx) => {
+router.get('/protectedServicio', authUtils.isAdmin, async (ctx) => {
+    ctx.body = {
+        message: "Ruta protegida de Admin accedida", admin: ctx.state.user
+    }
+})
+
+router.get('/protectedServicioChofer', authUtils.isChoferOrAdmin, async (ctx) => {
     ctx.body = {
         message: "Ruta protegida de Cliente accedida", cliente: ctx.state.user
     }
 })
 
-router.get('/protectedServicio', authUtils.isAdmin, async (ctx) => {
+router.get('/protectedServicioCliente', authUtils.isClienteOrAdmin, async (ctx) => {
     ctx.body = {
-        message: "Ruta protegida de Admin accedida", admin: ctx.state.user
+        message: "Ruta protegida de Cliente accedida", cliente: ctx.state.user
     }
 })
 

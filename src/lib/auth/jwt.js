@@ -30,6 +30,22 @@ async function isAdmin(ctx, next) {
     ctx.assert(scope.includes('admin'), 403, "You're not an Admin")
 }
 
+async function isChoferOrAdmin(ctx, next) {
+    await next();
+    var token = ctx.request.header.authorization.split(' ')[1];
+    var scope = getJWTScope(token);
+    ctx.assert(scope.includes('admin') || scope.includes('chofer'), 403, "You're not an Admin or Chofer");
+}
+
+async function isClienteOrAdmin(ctx, next) {
+    await next();
+    var token = ctx.request.header.authorization.split(' ')[1];
+    var scope = getJWTScope(token);
+    console.log(token);
+    console.log(scope);
+    ctx.assert(scope.includes('admin') || scope.includes('cliente'), 403, "You're not an Admin or Cliente");
+}
+
 module.exports = {
-    isAdmin, isChofer, isCliente
+    isAdmin, isChofer, isCliente, isChoferOrAdmin, isClienteOrAdmin
 };
