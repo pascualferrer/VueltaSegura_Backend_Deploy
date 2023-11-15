@@ -4,13 +4,13 @@ const authUtils = require('../lib/auth/jwt');
 
 const router = new Router();
 
-router.get('/protectedCliente', authUtils.isCliente, async (ctx) => {
+router.get('/protectedCliente', authUtils.isClienteOrAdmin, async (ctx) => {
     ctx.body = {
         message: "Ruta protegida de Cliente accedida", cliente: ctx.state.user
     }
 });
 
-router.get('/protectedChofer', authUtils.isChofer, async (ctx) => {
+router.get('/protectedChofer', authUtils.isChoferOrAdmin, async (ctx) => {
     ctx.body = {
         message: "Ruta protegida de Chofer accedida", chofer: ctx.state.user
     }
