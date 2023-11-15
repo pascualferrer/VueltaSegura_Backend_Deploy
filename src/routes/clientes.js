@@ -90,7 +90,7 @@ routerClientes.put("clientes.update", "/:id", authUtils.isClienteOrAdmin, async 
 });
 
 //* Eliminar un cliente
-routerClientes.delete("clientes.delete", "/:id", async (ctx) => {
+routerClientes.delete("clientes.delete", "/:id", authUtils.isAdmin, async (ctx) => {
     try {
         const cliente = await ctx.orm.Cliente.findByPk(ctx.params.id);
 

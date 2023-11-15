@@ -1,5 +1,5 @@
 const Router = require("koa-router");
-
+const authUtils = require('../lib/auth/jwt');
 const routerChoferes = new Router();
 
 //* Obtener un chofer específico para un email
@@ -31,7 +31,7 @@ routerChoferes.get("choferes.login", "/buscar-por-email", async (ctx) => {
 });
 
 //* Listar todos los choferes (según cápsula)
-routerChoferes.get("choferes.list", "/all", async (ctx) => {
+routerChoferes.get("choferes.list", "/all", authUtils.isAdmin, async (ctx) => {
     try {
         const choferes = await ctx.orm.Chofer.findAll();
         ctx.body = choferes;
@@ -43,7 +43,7 @@ routerChoferes.get("choferes.list", "/all", async (ctx) => {
 })
 
 //* Obtener un chofer específico (según cápsula)
-routerChoferes.get("choferes.show", "/:id", async (ctx) => {
+routerChoferes.get("choferes.show", "/:id", authUtils.isAdmin, async (ctx) => {
     try {
         const chofer = await ctx.orm.Chofer.findByPk(ctx.params.id); //! Busca según Primary Key
         //! Otra forma de hacerlo: const chofer = await ctx.orm.Chofer.findOne({where:{id:ctx.params.id}}); Busca según condiciones (igual con findAll)
@@ -55,21 +55,8 @@ routerChoferes.get("choferes.show", "/:id", async (ctx) => {
     }
 })
 
-
-//* Crear un nuevo chofer (según cápsula)
-routerChoferes.post("choferes.create", "/registro", async (ctx) => {
-    try {
-        const chofer = await ctx.orm.Chofer.create(ctx.request.body);
-        ctx.body = chofer;
-        ctx.status = 201;
-    } catch(error) {
-        ctx.body = error;
-        ctx.status = 400;
-    }
-})
-
 //* Actualizar chofer
-routerChoferes.put("choferes.update", "/:id", async (ctx) => {
+routerChoferes.put("choferes.update", "/:id", authUtils.isAdmin, async (ctx) => {
     try {
         const chofer = await ctx.orm.Chofer.findByPk(ctx.params.id);
         
@@ -90,7 +77,7 @@ routerChoferes.put("choferes.update", "/:id", async (ctx) => {
 });
 
 //* Eliminar un chofer
-routerChoferes.delete("choferes.delete", "/:id", async (ctx) => {
+routerChoferes.delete("choferes.delete", "/:id", authUtils.isAdmin, async (ctx) => {
     try {
         const chofer = await ctx.orm.Chofer.findByPk(ctx.params.id);
 

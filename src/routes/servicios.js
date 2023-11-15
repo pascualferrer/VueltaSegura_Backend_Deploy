@@ -127,7 +127,7 @@ routerServicios.put("servicios.update", "/:id", authUtils.isChoferOrAdmin, async
 });
 
 //* Eliminar un servicio
-routerServicios.delete("servicios.delete", "/:id", async (ctx) => {
+routerServicios.delete("servicios.delete", "/:id", authUtils.isAdmin, async (ctx) => {
     try {
         const servicio = await ctx.orm.Servicio.findByPk(ctx.params.id);
 
