@@ -23,8 +23,7 @@ router.post("authenticate.signup", "/admin/signup", async (ctx) => {
         admin = await ctx.orm.Admin.create({
             nombre: authInfo.nombre,
             contrasena: hashPassword,
-            email: authInfo.email,
-            telefono: authInfo.telefono
+            email: authInfo.email
         })
     } catch (error) {
         ctx.body = error;
@@ -34,7 +33,6 @@ router.post("authenticate.signup", "/admin/signup", async (ctx) => {
     ctx.body = {
         nombre: admin.nombre,
         email: admin.email,
-        telefono: admin.telefono
     };
     ctx.status = 201;
 })
@@ -84,6 +82,9 @@ router.post("authenticator.login", "/admin/login", async (ctx) => {
         "access_token": token,
         "token_type": "Bearer",
         "expire_in": expirationSeconds,
+        "id": admin.id, 
+        "nombre": admin.nombre,
+        "tipo": "admin"
     }
     ctx.status = 200;
     

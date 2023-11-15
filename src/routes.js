@@ -24,11 +24,11 @@ router.use(authRoutesClientes.routes());
 router.use(authRoutesChoferes.routes());
 router.use(authRoutesAdmins.routes());
 router.use("/chats", routerChats.routes());
-router.use("/servicios", routerServicios.routes());
 
 //* Rutas protegidas (requieren JWT)
 router.use(jwtMiddleware( { secret: process.env.JWT_SECRET } )); //! Comentar si se quiere usar postman
 
+router.use("/servicios", routerServicios.routes());
 router.use("/clientes", routerClientes.routes());
 router.use("/choferes", routerChoferes.routes());
 router.use("/administradores", routerAdmins.routes());

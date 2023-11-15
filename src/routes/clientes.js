@@ -1,10 +1,11 @@
 const Router = require("koa-router");
 const { DataTypes, Sequelize } = require("sequelize");
+const authUtils = require('../lib/auth/jwt');
 
 const routerClientes = new Router();
 
 //* Obtener un cliente específico para un email
-routerClientes.get("clientes.login", "/buscar-por-email", async (ctx) => {
+routerClientes.get("clientes.login", "/buscar-por-email", authUtils.isClienteOrAdmin, async (ctx) => {
     try {
         const { email } = ctx.request.query;
         console.log(email);
@@ -32,7 +33,7 @@ routerClientes.get("clientes.login", "/buscar-por-email", async (ctx) => {
 });
 
 //* Listar todos los clientes (según cápsula)
-routerClientes.get("clientes.list", "/", async (ctx) => {
+routerClientes.get("clientes.list", "/all", authUtils.isAdmin, async (ctx) => {
     try {
         const clientes = await ctx.orm.Cliente.findAll();
         ctx.body = clientes;
@@ -44,7 +45,7 @@ routerClientes.get("clientes.list", "/", async (ctx) => {
 })
 
 //* Obtener un cliente específico (según cápsula)
-routerClientes.get("clientes.show", "/:id", async (ctx) => {
+routerClientes.get("clientes.show", "/:id", authUtils.isChofer, async (ctx) => {
     try {
         const cliente = await ctx.orm.Cliente.findByPk(ctx.params.id); //! Busca según Primary Key
         //! Otra forma de hacerlo: const cliente = await ctx.orm.Cliente.findOne({where:{id:ctx.params.id}}); Busca según condiciones (igual con findAll)
@@ -63,7 +64,7 @@ routerClientes.get("clientes.show", "/:id", async (ctx) => {
 })
 
 //* Actualizar cliente
-routerClientes.put("clientes.update", "/:id", async (ctx) => {
+routerClientes.put("clientes.update", "/:id", authUtils.isClienteOrAdmin, async (ctx) => {
     try {
         const cliente = await ctx.orm.Cliente.findByPk(ctx.params.id);
         
@@ -73,7 +74,12 @@ routerClientes.put("clientes.update", "/:id", async (ctx) => {
             return;
         }
 
-        await cliente.update(ctx.request.body);
+        await cliente.update({
+            nombre: ctx.request.body.nombre,
+            email: ctx.request.body.email,
+            telefono: ctx.request.body.telefono,
+            //?contrasena: ctx.request.body.contrasena
+        });
 
         ctx.body = cliente;
         ctx.status = 200;
@@ -84,7 +90,7 @@ routerClientes.put("clientes.update", "/:id", async (ctx) => {
 });
 
 //* Eliminar un cliente
-routerClientes.delete("clientes.delete", "/:id", async (ctx) => {
+routerClientes.delete("clientes.delete", "/:id", authUtils.isAdmin, async (ctx) => {
     try {
         const cliente = await ctx.orm.Cliente.findByPk(ctx.params.id);
 
