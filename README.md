@@ -1,5 +1,36 @@
 # grupo_Messi_backend
 
+## Instalación JWT
+
+En primer lugar, se debe agregar en `.env ` el siguiente parametro para el funcionamiento del Jason Web Token
+
+```
+JWT_SECRET = secreto_jwt
+```
+
+Posteriormente se ejecutan las siguientes lineas para añadir el paquete `koa-jwt` y `jsonwebtoken` para el manejo de hashing.
+
+```
+yarn add jsonwebtoken
+yarn add koa-jwt
+```
+
+## Implementación: JWT (Autenticaciones)
+
+Para crear un entorno protegido y confiable se crean los siguientes archivos:
+
+1. `authenticationChoferes.js`, `authenticationClientes.js`, `authenticationAdmin.js:` Archivos con protocolo para implementar rutas de acceso seguro para el registro *signup* y el inicio de sesión *login* de cada **chofer**, **cliente** y **admin**.
+2. `routes.js:`  Para las rutas de servicios, clientes, choferes y administradores se implementa un middleware de Koa que utiliza *koa-jwt* para proteger estas rutas.
+3. `scope.js:` Define un conjunto de rutas protegidas que requieren un alcance específico para acceder. Estas rutas utilizan funciones de utilidad de autenticación `authUtils` para verificar si el usuario que realiza la solicitud tiene el alcance adecuado, según el tipo de usuario (cliente, chofer, admin) identificado en el token JWT.
+4. `jwt.js:` Proporciona funciones de utilidad para verificar el alcance scope de un token JWT y funciones de middleware para garantizar que el usuario que realiza una solicitud tenga el alcance adecuado.
+
+## Implementación: Admin
+
+Como se visualiza en la imagen, la creación del administrador se realiza a través de Postman, para crear el usuario con la contraseña hasheada.
+
+![1700096466423](image/README/1700096466423.png)
+
+
 ## Intalación API
 
 Para construir una API, se revisó la documentación presente en la Ayudantía 4. El framework que se utilizó para crear aplicaciones web corresponde a KOA y se implementó de la siguiente manera.
