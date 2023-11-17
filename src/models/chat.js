@@ -9,17 +9,17 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
+    static associate (models) {
       this.belongsTo(models.Cliente, {
-        foreignKey: 'clienteID',
+        foreignKey: 'clienteID'
       });
 
       this.belongsTo(models.Chofer, {
-        foreignKey: 'choferID',
+        foreignKey: 'choferID'
       });
 
       this.belongsTo(models.Admin, {
-        foreignKey: 'adminID',
+        foreignKey: 'adminID'
       });
     }
   }
@@ -28,13 +28,13 @@ module.exports = (sequelize, DataTypes) => {
     choferID: DataTypes.INTEGER,
     adminID: DataTypes.INTEGER,
     mensaje: {
-      type: DataTypes.STRING, 
+      type: DataTypes.STRING,
       min: 1,
       max: 200
     }
   }, {
     sequelize,
-    modelName: 'Chat',
+    modelName: 'Chat'
   });
   return Chat;
 };

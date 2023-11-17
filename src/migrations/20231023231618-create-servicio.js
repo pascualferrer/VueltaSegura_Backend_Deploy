@@ -1,7 +1,7 @@
 'use strict';
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  async up (queryInterface, Sequelize) {
     await queryInterface.createTable('Servicios', {
       id: {
         allowNull: false,
@@ -11,11 +11,11 @@ module.exports = {
       },
       clienteID: {
         type: Sequelize.INTEGER,
-        references: { model: 'Clientes', key: 'id'}
+        references: { model: 'Clientes', key: 'id' }
       },
       choferID: {
         type: Sequelize.INTEGER,
-        references: { model: 'Chofers', key: 'id'}
+        references: { model: 'Chofers', key: 'id' }
       },
       precio: {
         type: Sequelize.INTEGER
@@ -50,7 +50,7 @@ module.exports = {
       }
     });
   },
-  async down(queryInterface, Sequelize) {
+  async down (queryInterface, Sequelize) {
     await queryInterface.dropTable('Servicios');
   }
 };
