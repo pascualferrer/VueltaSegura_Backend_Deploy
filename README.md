@@ -1,5 +1,9 @@
 # grupo_Messi_backend
 
+## Documentación API 
+[GetPostMan 🔗](https://documenter.getpostman.com/view/26618082/2s9YXpUdse)
+
+
 ## Instalación JWT
 
 En primer lugar, se debe agregar en `.env ` el siguiente parametro para el funcionamiento del Jason Web Token
