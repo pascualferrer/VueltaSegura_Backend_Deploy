@@ -1,5 +1,4 @@
 const Router = require('koa-router');
-const { DataTypes, Sequelize } = require('sequelize');
 const authUtils = require('../lib/auth/jwt');
 
 const routerClientes = new Router();
