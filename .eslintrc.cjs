@@ -35,7 +35,6 @@ module.exports = {
     'linebreak-style': ['error', 'unix'],
 
     // Buenas prácticas y consistencia
-    'no-console': 'warn',
     'no-unused-vars': 'warn',
 
     // React
