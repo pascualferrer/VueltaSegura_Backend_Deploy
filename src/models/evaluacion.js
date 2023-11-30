@@ -24,13 +24,12 @@ module.exports = (sequelize, DataTypes) => {
     choferID: DataTypes.INTEGER,
     comentario: {
       type: DataTypes.STRING,
-      max: 500,
-      min: 10
+      allowNull: true
     },
     calificacion: {
       type: DataTypes.INTEGER,
-      max: 10,
-      min: 1
+      max: 5,
+      min: 0
     }
   }, {
     sequelize,

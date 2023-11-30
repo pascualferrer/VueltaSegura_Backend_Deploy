@@ -19,7 +19,7 @@ module.exports = {
       },
       comentario: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: true
       },
       calificacion: {
         type: Sequelize.INTEGER,

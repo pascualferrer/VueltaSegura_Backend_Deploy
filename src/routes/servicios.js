@@ -30,6 +30,24 @@ routerServicios.get('servicios.showID', '/buscar-por-id', authUtils.isClienteOrA
   }
 });
 
+//* Ruta para obtener servicios con estado "Agendado"
+routerServicios.get('servicios.agendados', '/agendados', authUtils.isCliente, async (ctx) => {
+  try {
+    const serviciosAgendados = await ctx.orm.Servicio.findAll({
+      where: {
+        estado: 'Agendado'
+      }
+    });
+
+    ctx.body = serviciosAgendados;
+    ctx.status = 200;
+  } catch (error) {
+    console.error('Error al obtener servicios agendados:', error);
+    ctx.body = { error: 'Error al procesar la solicitud' };
+    ctx.status = 500;
+  }
+});
+
 //* Obtener el historial del chofer
 routerServicios.get('servicios.historialChofer', '/historial-chofer', authUtils.isChoferOrAdmin, async (ctx) => {
   try {
