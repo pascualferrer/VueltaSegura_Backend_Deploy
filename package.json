@@ -16,7 +16,7 @@
     "koa-jwt": "^4.0.4",
     "koa-logger": "^3.2.1",
     "koa-router": "^11.0.2",
-    "nodemon": "^3.0.1",
+    "nodemon": "^3.0.2",
     "pg": "^8.11.3",
     "sequelize": "^6.33.0",
     "sequelize-cli": "^6.6.1"
@@ -24,7 +24,13 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "deploy": "node start.js",
+    "db:migrate": "sequelize db:migrate",
+    "db:seed": "sequelize db:seed:all",
+    "db:drop": "sequelize db:drop",
+    "db:create": "sequelize db:create",
+    "db:reset": "run-s db:drop db:create"
   },
   "devDependencies": {
     "eslint": "^8.51.0",
